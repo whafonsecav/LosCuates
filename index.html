@@ -1,0 +1,737 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0b090a">
+<title>¿Ya destapaste Los Cuates? · Encuesta de 1 minuto</title>
+<meta name="description" content="Encuesta corta y anónima sobre cócteles con tequila en lata personal. Solo tocas y listo.">
+<meta property="og:title" content="¿Ya destapaste Los Cuates? Cuéntanos en 1 minuto">
+<meta property="og:description" content="Encuesta corta y anónima sobre cócteles con tequila en lata. Solo para mayores de 18.">
+<meta property="og:image" content="assets/og.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600;700&family=Caveat+Brush&family=Rye&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<style>
+:root{
+  --negro:#0b090a; --carbon:#161113; --carbon2:#211a1d; --linea:#3a2f33;
+  --hueso:#f5ecd9; --hueso2:#e2d8c4; --gris:#b4a8ad;
+  --fresa:#e2283f; --rosa:#ff4f8b; --mango:#f8a21c; --mango2:#ffd23f; --limon:#86c63f; --verde:#1d8a4e;
+  --turq:#16b3ad; --morado:#9b59d0;
+  --f-rye:"Rye",Georgia,serif; --f-cond:"Anton",Impact,sans-serif; --f-hand:"Caveat Brush",cursive;
+  --f-body:"Barlow",system-ui,sans-serif; --f-bc:"Barlow Condensed","Arial Narrow",sans-serif;
+  --sec:var(--mango);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;background:#050404;color:var(--hueso);font-family:var(--f-body);overflow:hidden}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+
+/* ---------- marco: móvil a pantalla completa, en PC una "pantalla de celular" centrada ---------- */
+#bg{position:fixed;inset:0;background:radial-gradient(ellipse at 50% 30%,#1b1316 0%,#050404 70%);overflow:hidden}
+#bg .blob{position:absolute;width:70vmax;height:70vmax;border-radius:50%;filter:blur(70px);opacity:.28;will-change:transform}
+#app{position:fixed;inset:0;margin:auto;width:100%;max-width:460px;height:100%;max-height:100dvh;overflow:hidden;background:var(--negro);
+  display:flex;flex-direction:column}
+@media (min-width:700px) and (min-height:640px){
+  #app{height:min(900px,94vh);top:50%;transform:translateY(-50%);bottom:auto;border-radius:34px;box-shadow:0 30px 90px rgba(0,0,0,.7),0 0 0 1px var(--linea)}
+}
+#tint{position:absolute;inset:0;pointer-events:none;transition:background 1s;background:radial-gradient(ellipse at 85% 10%,color-mix(in srgb,var(--sec) 26%,transparent),transparent 55%),radial-gradient(ellipse at 0% 100%,color-mix(in srgb,var(--sec) 14%,transparent),transparent 50%)}
+.grain{position:absolute;inset:0;pointer-events:none;opacity:.07;mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+
+/* papel picado */
+#picado{position:relative;height:58px;flex:none;z-index:5;pointer-events:none}
+#picado svg.cuerda{position:absolute;left:0;top:0;width:100%;height:20px}
+#picado .flag{position:absolute;top:2px;transform-origin:50% 2px;will-change:transform}
+#picado .flag svg{display:block;width:44px;height:52px;filter:drop-shadow(0 4px 4px rgba(0,0,0,.4))}
+
+/* barra superior */
+#top{position:relative;z-index:6;flex:none;display:flex;align-items:center;gap:12px;padding:0 18px 10px}
+#back{width:38px;height:38px;border-radius:50%;border:1px solid var(--linea);display:grid;place-items:center;color:var(--hueso2);transition:opacity .3s}
+#back svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2.6}
+#back[hidden]{display:grid;opacity:0;pointer-events:none}
+#prog{flex:1;height:14px;border-radius:10px;background:var(--carbon2);border:1px solid var(--linea);overflow:hidden;position:relative}
+#progFill{position:absolute;left:0;top:0;bottom:0;width:0;border-radius:10px;background:linear-gradient(90deg,var(--fresa),var(--mango),var(--limon));overflow:hidden}
+#progFill i{position:absolute;bottom:-4px;width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,.75)}
+#fwd{width:38px;height:38px;border-radius:50%;border:1px solid var(--linea);display:grid;place-items:center;color:var(--hueso);transition:opacity .3s,background .2s}
+#fwd svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2.6}
+#fwd.ready{background:var(--sec);border-color:var(--sec);color:var(--negro)}
+#fwd[hidden]{display:grid;opacity:0;pointer-events:none}
+#fwd.off{opacity:.3;pointer-events:none}
+#progTxt{font:700 13px/1 var(--f-bc);letter-spacing:.12em;color:var(--gris);min-width:44px;text-align:right}
+
+/* pantallas */
+#screens{position:relative;flex:1;z-index:4;overflow:hidden}
+.scr{position:absolute;inset:0;display:flex;flex-direction:column;padding:6px 20px 30px;overflow-y:auto;overflow-x:hidden;scrollbar-width:none}
+.scr::-webkit-scrollbar{display:none}
+.kick{display:inline-flex;align-items:center;gap:10px;font:700 12.5px/1 var(--f-bc);letter-spacing:.28em;text-transform:uppercase;color:var(--sec)}
+.kick i{font-style:normal;font:400 13px/1 var(--f-cond);letter-spacing:.06em;color:var(--negro);background:var(--sec);padding:5px 8px 4px;border-radius:3px}
+.qt{font:400 clamp(27px,8vw,34px)/1.02 var(--f-cond);text-transform:uppercase;margin:12px 0 6px;letter-spacing:.005em}
+.qt em{font-style:normal;color:var(--sec)}
+.hint{font:400 21px/1.1 var(--f-hand);color:var(--hueso2);margin-bottom:14px}
+.hint b{color:var(--sec);font-weight:400}
+.ctx{font:500 13px/1.35 var(--f-body);color:var(--hueso2);opacity:.85;margin:-6px 0 12px}
+
+/* opciones */
+.opts{display:grid;gap:9px;grid-template-columns:1fr}
+.opts.c2{grid-template-columns:1fr 1fr}
+.grp{grid-column:1/-1;font:700 12px/1 var(--f-bc);letter-spacing:.24em;text-transform:uppercase;color:var(--sec);margin:8px 0 0;display:flex;align-items:center;gap:8px}
+.grp::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,var(--linea),transparent)}
+.opt{position:relative;display:flex;align-items:center;gap:12px;min-height:56px;padding:9px 14px 9px 9px;text-align:left;border-radius:14px;
+  background:linear-gradient(180deg,var(--carbon2),var(--carbon));border:1.5px solid var(--linea);font:600 16px/1.15 var(--f-body);color:var(--hueso);
+  transition:border-color .2s,background .25s,transform .15s}
+.opt:active{transform:scale(.97)}
+.opt .med{flex:none;width:38px;height:38px;border-radius:50%;display:grid;place-items:center;font-size:19px;position:relative;
+  background:radial-gradient(circle,color-mix(in srgb,var(--c,var(--sec)) 30%,var(--carbon)) 55%,transparent 56%)}
+.opt .med::before{content:"";position:absolute;inset:0;border-radius:50%;border:2px dotted var(--c,var(--sec));opacity:.85}
+.opt .lbl small{display:block;font:500 12.5px/1.25 var(--f-body);color:var(--gris);margin-top:2px}
+.opt .chk{position:absolute;right:10px;top:50%;width:24px;height:24px;margin-top:-12px;border-radius:50%;border:2px solid var(--linea);display:grid;place-items:center;transition:all .2s}
+.opt .chk svg{width:13px;height:13px;stroke:var(--negro);stroke-width:3.4;fill:none;opacity:0}
+.opt{padding-right:42px}
+.opt.on{border-color:var(--c,var(--sec));background:linear-gradient(180deg,color-mix(in srgb,var(--c,var(--sec)) 26%,var(--carbon2)),var(--carbon))}
+.opt.on .chk{background:var(--c,var(--sec));border-color:var(--c,var(--sec))}
+.opt.on .chk svg{opacity:1}
+.opt.dim{opacity:.38}
+.opts.c2 .opt{min-height:62px;font-size:14.5px;gap:9px;padding-left:7px}
+.opts.c2 .opt .med{width:32px;height:32px;font-size:16px}
+.opts.c2 .opt .lbl small{font-size:11.5px}
+.other-in{grid-column:1/-1;display:none;width:100%;padding:14px 16px;border-radius:12px;border:1.5px solid var(--sec);background:var(--carbon);color:var(--hueso);font:500 16px var(--f-body);outline:none}
+.other-in.show{display:block}
+
+/* latas como opción */
+.cans{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:4px}
+.can{position:relative;display:flex;flex-direction:column;align-items:center;gap:8px;padding:12px 4px 12px;border-radius:16px;border:1.5px solid var(--linea);background:linear-gradient(180deg,var(--carbon2),var(--carbon));transition:all .25s}
+.can img{height:clamp(120px,30vh,190px);width:auto;filter:drop-shadow(0 10px 14px rgba(0,0,0,.55));transition:transform .3s}
+.can span{font:400 17px/1 var(--f-cond);text-transform:uppercase;letter-spacing:.03em}
+.can .chk{position:absolute;right:8px;top:8px}
+.can.on{border-color:var(--c);background:linear-gradient(180deg,color-mix(in srgb,var(--c) 30%,var(--carbon2)),var(--carbon))}
+.can.on img{transform:translateY(-6px) rotate(-4deg) scale(1.04)}
+.can.on .chk{background:var(--c);border-color:var(--c)} .can.on .chk svg{opacity:1}
+.can .chk{width:24px;height:24px;border-radius:50%;border:2px solid var(--linea);display:grid;place-items:center}
+.can .chk svg{width:13px;height:13px;stroke:var(--negro);stroke-width:3.4;fill:none;opacity:0}
+
+/* escala de caritas */
+.scale{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:10px}
+.face{display:flex;flex-direction:column;align-items:center;gap:8px;padding:14px 2px;border-radius:14px;border:1.5px solid var(--linea);background:var(--carbon)}
+.face b{font-size:32px;line-height:1;transition:transform .25s}
+.face span{font:700 11px/1.1 var(--f-bc);letter-spacing:.06em;text-transform:uppercase;color:var(--gris);text-align:center}
+.face.on{border-color:var(--sec);background:color-mix(in srgb,var(--sec) 22%,var(--carbon))} .face.on b{transform:scale(1.25)}
+
+/* producto (prueba de concepto) */
+.concept{display:flex;align-items:center;gap:16px;margin:2px 0 16px;padding:14px;border-radius:18px;border:1px dashed var(--linea);background:rgba(255,255,255,.02)}
+.concept img{height:150px;flex:none;filter:drop-shadow(0 10px 14px rgba(0,0,0,.6))}
+.facts{display:flex;flex-direction:column;gap:7px}
+.fact{display:flex;align-items:center;gap:8px;font:600 14px/1.2 var(--f-body);color:var(--hueso2)}
+.fact b{font:400 20px/1 var(--f-cond);color:var(--hueso);min-width:58px}
+.src{font:500 11px/1.3 var(--f-body);color:var(--gris);margin-top:2px}
+
+/* demografía en una pantalla */
+.drow{margin-bottom:16px}
+.drow .lb{font:700 13px/1 var(--f-bc);letter-spacing:.2em;text-transform:uppercase;color:var(--hueso2);margin-bottom:9px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{padding:11px 15px;border-radius:30px;border:1.5px solid var(--linea);background:var(--carbon);font:600 14.5px/1 var(--f-body);transition:all .2s}
+.chip.on{background:var(--sec);border-color:var(--sec);color:var(--negro)}
+
+/* barra de acción fija (siempre visible) */
+#screens::after{content:"";position:absolute;left:0;right:0;bottom:0;height:34px;pointer-events:none;background:linear-gradient(transparent,var(--negro));z-index:3}
+#bar{position:relative;z-index:6;flex:none;padding:10px 20px calc(14px + env(safe-area-inset-bottom));background:var(--negro);border-top:1px solid rgba(255,255,255,.05)}
+#bar[hidden]{display:none}
+#barNote{font:400 18px/1 var(--f-hand);color:var(--hueso2);text-align:center;margin-bottom:8px;min-height:18px}
+#barNote b{color:var(--sec);font-weight:400}
+.more{position:absolute;left:50%;bottom:8px;z-index:4;transform:translateX(-50%);padding:6px 12px;border-radius:20px;background:rgba(0,0,0,.75);border:1px solid var(--linea);font:700 11.5px/1 var(--f-bc);letter-spacing:.14em;text-transform:uppercase;color:var(--hueso2);pointer-events:none;transition:opacity .3s}
+/* botones */
+.cta{position:relative;display:flex;align-items:center;justify-content:center;gap:10px;width:100%;min-height:56px;border-radius:16px;
+  background:var(--sec);color:var(--negro);font:400 22px/1 var(--f-cond);text-transform:uppercase;letter-spacing:.04em;
+  box-shadow:0 8px 0 color-mix(in srgb,var(--sec) 55%,#000),0 14px 30px rgba(0,0,0,.4);transition:transform .12s,box-shadow .12s,opacity .3s,filter .3s}
+.cta:active{transform:translateY(5px);box-shadow:0 3px 0 color-mix(in srgb,var(--sec) 55%,#000)}
+.cta[disabled]{filter:grayscale(1) brightness(.55);pointer-events:none}
+.cta svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:2.8}
+.foot{height:16px;flex:none}
+.spacer{flex:1;min-height:18px}
+
+/* portada */
+.hero{align-items:stretch}
+.brand{font:400 15px/1 var(--f-bc);letter-spacing:.32em;text-transform:uppercase;color:var(--hueso2);font-weight:700}
+.h1{font:400 clamp(44px,13vw,60px)/.92 var(--f-rye);margin:14px 0 10px}
+.h1 .c{color:var(--sec)}
+.lead{font:400 17px/1.4 var(--f-body);color:var(--hueso2)} .lead b{color:var(--hueso)}
+.trio{position:relative;height:clamp(190px,32vh,260px);margin:10px 0 6px}
+.trio img{position:absolute;bottom:0;height:88%;filter:drop-shadow(0 18px 18px rgba(0,0,0,.6))}
+.trio img:nth-child(1){left:12%;transform:rotate(-12deg)} .trio img:nth-child(2){left:50%;margin-left:-15%;height:100%;z-index:2} .trio img:nth-child(3){right:12%;transform:rotate(12deg)}
+.badges{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0 16px}
+.badge{display:flex;align-items:center;gap:7px;padding:8px 12px;border-radius:30px;border:1px solid var(--linea);font:700 12.5px/1 var(--f-bc);letter-spacing:.12em;text-transform:uppercase;color:var(--hueso2)}
+.badge b{width:8px;height:8px;border-radius:50%;background:var(--c)}
+.legal{font:500 12px/1.4 var(--f-body);color:var(--gris);margin-top:14px;text-align:center}
+.legal b{color:var(--hueso2)}
+
+/* final */
+.fin{align-items:center;text-align:center;justify-content:center}
+.fin .h1{font-size:clamp(46px,14vw,64px)}
+.stamp{display:inline-block;margin:14px auto 6px;padding:10px 18px;border:3px solid var(--sec);border-radius:8px;color:var(--sec);font:400 22px/1 var(--f-cond);letter-spacing:.06em;text-transform:uppercase;transform:rotate(-5deg)}
+.fin img.fav{height:200px;filter:drop-shadow(0 18px 18px rgba(0,0,0,.6));margin:6px 0}
+#confetti{position:absolute;inset:0;z-index:20;pointer-events:none;overflow:hidden}
+#confetti i{position:absolute;top:-30px;width:16px;height:20px;clip-path:polygon(0 0,100% 0,100% 82%,84% 100%,67% 82%,50% 100%,33% 82%,17% 100%,0 82%)}
+#toast{position:absolute;left:50%;bottom:22px;z-index:30;transform:translate(-50%,160px);opacity:0;padding:12px 18px;border-radius:12px;background:var(--hueso);color:var(--negro);font:600 14px var(--f-body);white-space:nowrap}
+@media (max-height:640px){ .qt{font-size:26px;margin-top:6px} .opt{min-height:50px} .hint{font-size:19px;margin-bottom:10px} #picado{height:44px} }
+@media (prefers-reduced-motion:reduce){ *{transition:none!important} }
+</style>
+</head>
+<body>
+<div id="bg"><div class="blob" style="background:var(--fresa);left:-20vmax;top:-20vmax"></div><div class="blob" style="background:var(--mango);right:-25vmax;bottom:-25vmax"></div><div class="blob" style="background:var(--limon);left:30%;top:40%;opacity:.12"></div></div>
+<main id="app" aria-live="polite">
+  <div id="tint"></div><div class="grain"></div>
+  <div id="picado" aria-hidden="true"></div>
+  <div id="top">
+    <button id="back" hidden aria-label="Volver a la pregunta anterior"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button>
+    <div id="prog" role="progressbar" aria-valuemin="0" aria-valuemax="100"><div id="progFill"></div></div>
+    <div id="progTxt"></div>
+    <button id="fwd" hidden aria-label="Siguiente pregunta"><svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg></button>
+  </div>
+  <div id="screens"></div>
+  <div id="bar"><div id="barNote"></div><button class="cta" id="cta"></button></div>
+  <div id="confetti" aria-hidden="true"></div>
+  <div id="toast" role="status"></div>
+</main>
+
+<script>
+/* =====================================================================
+   CONFIGURACIÓN
+   1) Pega aquí la URL de tu Web App de Google Apps Script (termina en /exec).
+      Si la dejas vacía, la encuesta funciona en "modo prueba" y solo guarda
+      en este navegador (sirve para probarla sin llenar la base de datos).
+   ===================================================================== */
+const ENDPOINT = 'https://script.google.com/macros/s/AKfycbyvl9X7E7A6OCQEJKUCTWWxCMbClgeVGJe-ZUDuHpAsdlPzXy7sYgMPCqvAjyFOtJEn3w/exec';
+const VERSION = 'v1-2026-10';
+
+/* ---------- utilidades ---------- */
+const $ = (s, el = document) => el.querySelector(s);
+const ICON_CHK = '<svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
+const ICON_ARR = '<svg viewBox="0 0 24 24"><path d="M5 12h13M13 6l6 6-6 6"/></svg>';
+const COL = { fresa:'#e2283f', mango:'#f8a21c', limon:'#86c63f', turq:'#16b3ad', morado:'#9b59d0', rosa:'#ff4f8b', am:'#ffd23f', hueso:'#f5ecd9', gris:'#8f8288' };
+const ACCENTS = [COL.mango, COL.fresa, COL.limon, COL.turq, COL.rosa, COL.morado, COL.am];
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;' }[c]));
+const LATA = { limon:'assets/lata-limon.png', mango:'assets/lata-mango.png', fresa:'assets/lata-fresa.png' };
+
+/* ---------- listas de opciones reutilizadas (mismas en las dos rutas para poder comparar) ---------- */
+const GUSTA = [
+  { v:'sabor', t:'El sabor', e:'😋' },
+  { v:'precio', t:'El precio', e:'💸' },
+  { v:'listo', t:'Viene listo: abrir y tomar', e:'🥫' },
+  { v:'suave', t:'Es suave, no pega tan duro', e:'🍃' },
+  { v:'fuerte', t:'Tiene buen alcohol', e:'🔥' },
+  { v:'refresca', t:'Es refrescante', e:'🧊' },
+  { v:'tequila', t:'Sabe a tequila / margarita', e:'🌵' },
+  { v:'diseno', t:'La lata, el diseño', e:'🎨' },
+  { v:'consigue', t:'Se consigue fácil', e:'🏪' },
+  { v:'compartir', t:'Es para el parche', e:'🍻' },
+];
+const PLANES = [
+  { v:'parche', t:'Parche con amigos', e:'🍻' },
+  { v:'previa', t:'La previa', e:'⏱️' },
+  { v:'rumba', t:'Fiesta o rumba', e:'🪩' },
+  { v:'tardeo', t:'Tardeo o asado', e:'🌇' },
+  { v:'casa', t:'En casa, relax', e:'🛋️' },
+  { v:'paseo', t:'Paseo o piscina', e:'🏖️' },
+  { v:'evento', t:'Concierto o partido', e:'🎤' },
+];
+const NUEVOS = [
+  { v:'maracuya', t:'Maracuyá', e:'💛', c:COL.am },
+  { v:'tamarindo_picante', t:'Tamarindo picante', e:'🌶️', c:'#b8642f' },
+  { v:'lulo', t:'Lulo', e:'🟢', c:COL.limon },
+  { v:'mango_biche_sal', t:'Mango biche con sal', e:'🥭', c:COL.mango },
+  { v:'sandia', t:'Sandía', e:'🍉', c:COL.rosa },
+  { v:'guanabana', t:'Guanábana', e:'🤍', c:'#d4c8b2' },
+  { v:'ninguno', t:'Ninguno, me quedo con los de hoy', e:'👌', c:COL.turq },
+];
+const MARCAS = [
+  { g:'Con tequila' },
+  { v:'mamitas', t:'Mamitas', s:'lata de 355 ml', e:'🌵', c:COL.rosa },
+  { v:'new_mix', t:'New Mix', s:'de México', e:'🌵', c:COL.fresa },
+  { v:'cuervo_lata', t:'José Cuervo en lata', s:'margarita lista', e:'🌵', c:COL.limon },
+  { v:'high_noon', t:'High Noon Tequila', s:'tequila y soda', e:'🌵', c:COL.turq },
+  { v:'margarita_bar', t:'Margarita preparada', s:'en bar o en casa', e:'🍸', c:COL.mango },
+  { g:'Otros cócteles en lata' },
+  { v:'smirnoff_ice', t:'Smirnoff Ice', e:'🥫', c:'#9fc7ff' },
+  { v:'smirnoff_tamarindo', t:'Smirnoff Spicy Tamarindo', e:'🌶️', c:'#b8642f' },
+  { v:'like', t:'LIKE Ice', e:'🥫', c:COL.limon },
+  { v:'four_loko', t:'Four Loko', e:'🥫', c:COL.morado },
+  { v:'mikes', t:"Mike's Hard Lemonade", e:'🍋', c:COL.am },
+  { v:'bretana_alcohol', t:'Bretaña con alcohol', e:'🫧', c:COL.turq },
+  { v:'hard_seltzer', t:'Otro hard seltzer', s:'Parce, Vuur, MEH…', e:'🫧', c:'#d4c8b2' },
+  { v:'viejo_caldas', t:'Cócteles Viejo de Caldas', s:'mojito, cuba libre…', e:'🥫', c:COL.mango },
+  { v:'amarillo_coctel', t:'Cóctel Aguardiente Amarillo', e:'🥫', c:COL.am },
+  { v:'otro', t:'Otro', s:'escribe cuál', e:'✍️', c:COL.hueso, other:true },
+  { v:'ninguna', t:'Ninguna de estas', e:'🙅', c:COL.gris, excl:true },
+];
+const labelOf = (list, v) => (list.find(o => o.v === v) || {}).t || v;
+
+/* ---------- cuestionario (orden + condiciones) ---------- */
+// type: single | multi | cans | scale | concept | demo | intro | end
+const Q = [
+  { id:'intro', type:'intro' },
+  { id:'edad', type:'single', k:'Antes de arrancar', title:'¿Qué <em>edad</em> tienes?', hint:'Toca una', cols:2,
+    opts:[{ v:'menor', t:'Menos de 18', e:'🚫' }, { v:'18-20', t:'18 a 20', e:'🎂' }, { v:'21-24', t:'21 a 24', e:'🎉' }, { v:'25-29', t:'25 a 29', e:'✨' }, { v:'30-39', t:'30 a 39', e:'😎' }, { v:'40+', t:'40 o más', e:'🌟' }] },
+  { id:'probado', type:'single', k:'La pregunta clave', title:'¿Ya probaste <em>Los Cuates</em>?', hint:'El cóctel con tequila en lata personal (269 ml)', showCans:true,
+    opts:[{ v:'si', t:'¡Sí, ya la probé!', e:'🙌', c:COL.limon }, { v:'visto', t:'La he visto, pero no la he probado', e:'👀', c:COL.mango }, { v:'no', t:'No la conozco', e:'🤷', c:COL.fresa }] },
+
+  /* ===== RUTA A · sí la probó ===== */
+  { id:'sabores', when:a => a.probado === 'si', type:'cans', multi:true, k:'Los Cuates', title:'¿Qué <em>sabores</em> has probado?', hint:'Toca <b>todos</b> los que hayas probado' },
+  { id:'favorito', when:a => a.probado === 'si' && (a.sabores || []).length > 1, type:'cans', k:'Los Cuates', title:'Y de esos, ¿cuál es <em>tu favorito</em>?', hint:'Solo uno', from:a => a.sabores },
+  { id:'gusta', when:a => a.probado === 'si', type:'multi', max:3, k:'Lo que te enamora', title:'¿Qué es lo que más te gusta de <em>Los Cuates</em>?', hint:'Elige <b>hasta 3</b>', opts:[...GUSTA, { v:'mexicano', t:'El toque mexicano', e:'💀' }] },
+  { id:'mejorar', when:a => a.probado === 'si', type:'multi', max:2, k:'Sin pena', title:'¿Qué le <em>mejorarías</em>?', hint:'Elige <b>hasta 2</b>',
+    opts:[{ v:'menos_dulce', t:'Que sea menos dulce', e:'🍬' }, { v:'mas_tequila', t:'Más sabor a tequila', e:'🌵' }, { v:'mas_alcohol', t:'Más alcohol', e:'🔥' }, { v:'mas_gas', t:'Más burbuja', e:'🫧' }, { v:'precio', t:'Mejor precio', e:'💸' }, { v:'sabores', t:'Más sabores', e:'🍹' }, { v:'conseguir', t:'Que se consiga más fácil', e:'🏪' }, { v:'nada', t:'Nada, así está perfecta', e:'💯', excl:true }] },
+  { id:'tequila', when:a => a.probado === 'si', type:'single', k:'Pregunta de catador', title:'Cuando la tomas, ¿<em>sientes el tequila</em>?',
+    opts:[{ v:'si', t:'Sí, se siente', e:'🌵', c:COL.limon }, { v:'poco', t:'Poquito', e:'🤏', c:COL.mango }, { v:'nada', t:'Nada', e:'🙅', c:COL.fresa }, { v:'no_se', t:'Nunca me fijé', e:'🤔', c:COL.turq }] },
+  { id:'plan', when:a => a.probado === 'si', type:'multi', k:'El plan', title:'¿En qué <em>planes</em> te tomas una?', hint:'Toca <b>todos</b> los que apliquen', opts:PLANES, cols:2 },
+  { id:'precio', when:a => a.probado === 'si', type:'single', k:'El bolsillo', title:'La lata personal cuesta unos <em>$5.000</em>. ¿Qué te parece?',
+    ctx:'Precio de góndola en supermercados y tiendas de Colombia (octubre de 2026): entre $4.790 y $5.500.',
+    opts:[{ v:'barata', t:'Barata, la compro sin pensar', e:'🤑', c:COL.limon }, { v:'justa', t:'Justa, vale lo que cuesta', e:'👍', c:COL.turq }, { v:'algo_cara', t:'Un poco cara', e:'🤨', c:COL.mango }, { v:'cara', t:'Cara', e:'💸', c:COL.fresa }] },
+  { id:'sustituto', when:a => a.probado === 'si', type:'single', k:'Plan B', title:'Si en la tienda <em>no hay Los Cuates</em>, ¿qué te llevas?', cols:2,
+    opts:[{ v:'cerveza', t:'Cerveza', e:'🍺' }, { v:'smirnoff_ice', t:'Smirnoff Ice', e:'🥫' }, { v:'mamitas', t:'Mamitas', e:'🌵' }, { v:'like', t:'LIKE', e:'🥫' }, { v:'four_loko', t:'Four Loko', e:'🥫' }, { v:'otro_coctel', t:'Otro cóctel en lata', e:'🍹' }, { v:'aguardiente_ron', t:'Aguardiente o ron', e:'🥃' }, { v:'otra_tienda', t:'La busco en otra tienda', e:'🏃' }] },
+  { id:'entero', when:a => a.probado === 'si', type:'multi', k:'¿Cómo llegó a ti?', title:'¿Dónde <em>supiste</em> de Los Cuates?', hint:'Toca <b>todos</b> los que apliquen', cols:2,
+    opts:[{ v:'tiktok', t:'TikTok', e:'📱' }, { v:'instagram', t:'Instagram', e:'📸' }, { v:'tv', t:'Comercial de TV', e:'📺' }, { v:'nevera', t:'En la nevera de la tienda', e:'🧊' }, { v:'amigo', t:'Me la recomendaron', e:'🗣️' }, { v:'fiesta', t:'En una fiesta o parche', e:'🎉' }] },
+  { id:'persona', when:a => a.probado === 'si', type:'single', k:'Imagina…', title:'Si Los Cuates fuera <em>una persona</em>, sería…',
+    opts:[{ v:'parcero', t:'El parcero que arma el plan', e:'🤝', c:COL.mango }, { v:'fiestero', t:'El fiestero que contagia alegría', e:'💃', c:COL.fresa }, { v:'chistoso', t:'El chistoso, cero serio', e:'😂', c:COL.am }, { v:'sencillo', t:'El sencillo que no se complica', e:'😌', c:COL.limon }, { v:'mexicano', t:'El mexicano de corazón', e:'💀', c:COL.rosa }, { v:'del_monton', t:'Uno más del montón', e:'😶', c:COL.gris }] },
+
+  /* ===== RUTA B · no la ha probado ===== */
+  { id:'frena', when:a => a.probado === 'visto', type:'multi', max:2, k:'Cero juicio', title:'¿Qué te ha <em>frenado</em> para probarla?', hint:'Elige <b>hasta 2</b>',
+    opts:[{ v:'ocasion', t:'No se ha dado la ocasión', e:'📅' }, { v:'no_se_sabor', t:'No sé a qué sabe', e:'🤔' }, { v:'duda_tequila', t:'Dudo que tenga tequila', e:'🌵' }, { v:'tengo_favorita', t:'Ya tengo mi bebida favorita', e:'❤️' }, { v:'precio', t:'El precio', e:'💸' }, { v:'no_encuentro', t:'No la encuentro', e:'🔎' }, { v:'dulce', t:'Creo que es muy dulce', e:'🍬' }, { v:'no_lata', t:'No tomo cócteles en lata', e:'🚫' }] },
+  { id:'conoce', when:a => a.probado && a.probado !== 'si', type:'multi', k:'Tu radar', title:'¿Cuáles de estos <em>conoces o has probado</em>?', hint:'En lata personal. Toca <b>todos</b> los que conozcas', opts:MARCAS, cols:2 },
+  { id:'toma_normal', when:a => a.probado && a.probado !== 'si' && isNone(a.conoce), type:'multi', k:'Tu plan de siempre', title:'Entonces, ¿qué <em>tomas</em> normalmente en un plan?', hint:'Toca <b>todos</b> los que apliquen', cols:2,
+    opts:[{ v:'cerveza', t:'Cerveza', e:'🍺' }, { v:'aguardiente', t:'Aguardiente', e:'🥃' }, { v:'ron', t:'Ron', e:'🥃' }, { v:'tequila_shot', t:'Tequila en shot', e:'🌵' }, { v:'vino', t:'Vino', e:'🍷' }, { v:'coctel_bar', t:'Cócteles de bar', e:'🍸' }, { v:'sin_alcohol', t:'No tomo alcohol', e:'🧃', excl:true }] },
+  { id:'favorita', when:a => hasBrands(a) && brandList(a).length > 1, type:'single', k:'Tu favorita', title:'De las que conoces, ¿cuál te gusta <em>más</em>?', hint:'Solo te mostramos las que elegiste', from:a => brandList(a) },
+  { id:'gusta', alias:'gusta_b', when:a => hasBrands(a), type:'multi', max:3, k:'El porqué', title:a => `¿Qué es lo que más te gusta de <em>${esc(favName(a))}</em>?`, hint:'Elige <b>hasta 3</b>', opts:GUSTA },
+  { id:'plan', alias:'plan_b', when:a => hasBrands(a), type:'multi', k:'El plan', title:a => `¿En qué <em>planes</em> tomas ${esc(favName(a))}?`, hint:'Toca <b>todos</b> los que apliquen', opts:PLANES, cols:2 },
+  { id:'paga', when:a => hasBrands(a) && fav(a) !== 'margarita_bar', type:'single', k:'El bolsillo', title:a => `¿Cuánto pagas normalmente por <em>una lata personal</em> de ${esc(favName(a))}?`,
+    opts:[{ v:'<5000', t:'Menos de $5.000', e:'🪙', c:COL.limon }, { v:'5000-7000', t:'$5.000 a $7.000', e:'💵', c:COL.turq }, { v:'7000-9000', t:'$7.000 a $9.000', e:'💵', c:COL.mango }, { v:'>9000', t:'Más de $9.000', e:'💰', c:COL.fresa }, { v:'no_se', t:'No sé / no me fijo', e:'🤷', c:COL.gris }] },
+  { id:'cambiaria', when:a => a.probado && a.probado !== 'si' && !onlyNoAlcohol(a), type:'multi', max:2, k:'Lo que te convence', title:'¿Qué te haría <em>probar una bebida nueva</em> en lata?', hint:'Elige <b>hasta 2</b>',
+    opts:[{ v:'amigo', t:'Que me la recomiende un amigo', e:'🗣️' }, { v:'redes', t:'Verla en TikTok o Instagram', e:'📱' }, { v:'promo', t:'Una promo: 2x1 o descuento', e:'🏷️' }, { v:'degustacion', t:'Probarla gratis en la tienda', e:'🥤' }, { v:'tequila_real', t:'Que tenga tequila de verdad', e:'🌵' }, { v:'sabor_nuevo', t:'Un sabor diferente', e:'🍹' }, { v:'precio', t:'Un buen precio', e:'💸' }, { v:'diseno', t:'Un diseño que me llame', e:'🎨' }] },
+  { id:'probaria', when:a => a.probado && a.probado !== 'si' && !onlyNoAlcohol(a), type:'concept', k:'Te la presentamos', title:'Con esto en mente, ¿<em>la probarías</em>?',
+    opts:[{ v:'de_una', t:'¡De una!', e:'🙌', c:COL.limon }, { v:'tal_vez', t:'Tal vez', e:'🤔', c:COL.mango }, { v:'no', t:'No me llama', e:'🙅', c:COL.fresa }] },
+  { id:'sabor_primero', when:a => a.probado && a.probado !== 'si' && !onlyNoAlcohol(a) && a.probaria !== 'no', type:'cans', k:'Primer sorbo', title:'¿Con cuál <em>sabor</em> arrancarías?', hint:'Solo uno' },
+
+  /* ===== común ===== */
+  { id:'nuevo_sabor', when:a => a.probado && !onlyNoAlcohol(a), type:'single', k:'¡Tú decides!', title:'Si Los Cuates sacara <em>un sabor nuevo</em>, ¿cuál quieres?', opts:NUEVOS, cols:2 },
+  { id:'recomienda', when:a => a.probado === 'si', type:'scale', k:'Última de Los Cuates', title:'¿Se la <em>recomendarías</em> a un amigo?',
+    opts:[{ v:1, e:'😖', t:'Jamás' }, { v:2, e:'🙁', t:'Difícil' }, { v:3, e:'😐', t:'Tal vez' }, { v:4, e:'🙂', t:'Sí' }, { v:5, e:'🤩', t:'¡De una!' }] },
+  { id:'demo', type:'demo', k:'Para terminar', title:'Cuéntanos un <em>poquito de ti</em>', hint:'Es anónimo, solo para agrupar respuestas' },
+  { id:'end', type:'end' },
+];
+
+/* ---------- ayudas de la ruta B ---------- */
+function isNone(list) { return Array.isArray(list) && list.length === 1 && list[0] === 'ninguna'; }
+function brandList(a) { return (a.conoce || []).filter(v => v !== 'ninguna'); }
+function hasBrands(a) { return a.probado && a.probado !== 'si' && brandList(a).length > 0; }
+function fav(a) { const b = brandList(a); return b.length === 1 ? b[0] : a.favorita; }
+function favName(a) { const v = fav(a); return v === 'otro' ? (a.conoce_otro || 'esa bebida') : labelOf(MARCAS, v); }
+function onlyNoAlcohol(a) { return isNone(a.conoce) && (a.toma_normal || []).length === 1 && a.toma_normal[0] === 'sin_alcohol'; }
+
+/* ---------- estado ---------- */
+const A = {};               // respuestas
+const hist = [];            // índices de Q visitados
+let cur = -1, busy = false, startedAt = 0;
+const params = new URLSearchParams(location.search);
+const qText = q => typeof q.title === 'function' ? q.title(A) : q.title;
+const visible = (q) => !q.when || q.when(A);
+function nextIndex(from) { for (let i = from + 1; i < Q.length; i++) if (visible(Q[i])) return i; return Q.length - 1; }
+
+/* ---------- papel picado con viento ---------- */
+const flags = [];
+(function buildPicado() {
+  const box = $('#picado');
+  const cols = ['#e2283f', '#f8a21c', '#86c63f', '#ff4f8b', '#16b3ad', '#ffd23f', '#9b59d0'];
+  const holes = [
+    'M30 40 a8 8 0 1 0 16 0 a8 8 0 1 0 -16 0Z M70 40 a8 8 0 1 0 16 0 a8 8 0 1 0 -16 0Z M50 70 l12 12 -12 12 -12 -12Z M20 100 h20 v8 h-20Z M76 100 h20 v8 h-20Z',
+    'M58 28 l10 18 -10 18 -10 -18Z M28 60 a7 7 0 1 0 14 0 a7 7 0 1 0 -14 0Z M74 60 a7 7 0 1 0 14 0 a7 7 0 1 0 -14 0Z M40 92 h36 v6 h-36Z',
+    'M58 34 a14 14 0 1 0 0.1 0Z M24 84 l10 -10 10 10 -10 10Z M72 84 l10 -10 10 10 -10 10Z',
+    'M22 30 h72 v6 h-72Z M58 50 a16 16 0 1 0 0.1 0Z M30 96 a6 6 0 1 0 12 0 a6 6 0 1 0 -12 0Z M74 96 a6 6 0 1 0 12 0 a6 6 0 1 0 -12 0Z'
+  ];
+  const n = 10;
+  let html = '<svg class="cuerda" viewBox="0 0 460 20" preserveAspectRatio="none"><path d="M0 3 Q230 16 460 3" fill="none" stroke="#e8dcc0" stroke-opacity=".5" stroke-width="1.5"/></svg>';
+  for (let i = 0; i < n; i++) {
+    const x = (i + .5) / n * 100, sag = Math.sin(Math.PI * (i + .5) / n) * 9;
+    html += `<div class="flag" style="left:calc(${x}% - 22px);top:${2 + sag}px"><svg viewBox="0 0 116 132"><path fill="${cols[i % cols.length]}" fill-rule="evenodd" d="M0 0 H116 V118 l-9.6 8 -9.7-8 -9.6 8 -9.7-8 -9.6 8 -9.7-8 -9.6 8 -9.7-8 -9.6 8 -9.7-8 -9.6 8 -9.7-8 -9.6 8 -9.6-8 Z ${holes[i % holes.length]}"/><rect width="116" height="7" fill="rgba(0,0,0,.25)"/></svg></div>`;
+  }
+  box.innerHTML = html;
+  box.querySelectorAll('.flag').forEach((el, i) => flags.push({ el, i, ph: Math.random() * 6.28, k: .7 + Math.random() * .6 }));
+  gsap.ticker.add(() => {
+    const t = gsap.ticker.time, gust = ((t * 0.55) % 1.8) - .4;
+    for (const f of flags) {
+      const u = (f.i + .5) / n, near = Math.exp(-Math.pow((u - gust) / .18, 2));
+      const r = Math.sin(t * 1.6 * f.k + f.ph) * 5 + near * 16 * Math.sin(t * 6 + f.ph);
+      f.el.style.transform = `rotate(${r.toFixed(2)}deg) skewX(${(r * .3).toFixed(2)}deg)`;
+    }
+  });
+})();
+gsap.to('#bg .blob', { x: () => gsap.utils.random(-120, 120), y: () => gsap.utils.random(-120, 120), duration: 9, repeat: -1, yoyo: true, ease: 'sine.inOut', stagger: 1.5 });
+
+/* burbujas dentro de la barra de progreso */
+(function bubbles() {
+  const fill = $('#progFill');
+  for (let i = 0; i < 8; i++) {
+    const b = document.createElement('i'); fill.appendChild(b);
+    gsap.set(b, { left: (i * 13 + 4) + '%', scale: gsap.utils.random(.5, 1.1) });
+    gsap.to(b, { y: -18, opacity: 0, duration: gsap.utils.random(1.2, 2.2), repeat: -1, delay: Math.random() * 2, ease: 'none' });
+  }
+})();
+
+/* ---------- barra de acción fija: siempre visible, nunca se pierde bajo la lista ---------- */
+let action = null;   // { label, enabled(), run(), note(), isQ }
+function setAction(a) { action = a; paintAction(); }
+function paintAction() {
+  const bar = $('#bar'), cta = $('#cta'), fwd = $('#fwd');
+  if (!action) { bar.hidden = true; fwd.hidden = true; return; }
+  bar.hidden = false;
+  const ok = action.enabled ? action.enabled() : true;
+  cta.innerHTML = (typeof action.label === 'function' ? action.label() : action.label) + ' ' + ICON_ARR;
+  cta.disabled = !ok;
+  $('#barNote').innerHTML = action.note ? action.note() : '';
+  fwd.hidden = !action.isQ;
+  fwd.classList.toggle('off', !ok);
+  fwd.classList.toggle('ready', ok && !!action.isQ);
+}
+function runAction() { if (action && (!action.enabled || action.enabled()) && !busy) action.run(); }
+$('#cta').onclick = runAction;
+$('#fwd').onclick = runAction;
+const next = () => go(nextIndex(cur));
+const answered = id => { const v = A[id]; return Array.isArray(v) ? v.length > 0 : v !== undefined && v !== null && v !== ''; };
+
+/* acción estándar de una pregunta */
+function qAction(q, multi) {
+  return {
+    isQ: true,
+    label: () => multi ? (answered(q.id) ? `Listo (${A[q.id].length})` : 'Elige para seguir') : (answered(q.id) ? 'Siguiente' : 'Elige una opción'),
+    enabled: () => answered(q.id) && !(multi && (A[q.id] || []).includes('otro') && !(A.conoce_otro || '').trim()),
+    note: () => {
+      if (!multi) return answered(q.id) ? '' : 'Toca una y avanzamos solitos';
+      const n = (A[q.id] || []).length;
+      if ((A[q.id] || []).includes('otro') && !(A.conoce_otro || '').trim()) return 'Escribe cuál es la <b>otra</b> para seguir';
+      if (!n) return q.max ? `Puedes elegir <b>hasta ${q.max}</b>` : 'Puedes elegir <b>varias</b>';
+      return q.max ? `Llevas <b>${n} de ${q.max}</b>` : `Llevas <b>${n}</b> · toca más o dale Listo`;
+    },
+    run: next,
+  };
+}
+
+/* ---------- render de cada tipo de pantalla ---------- */
+function med(o) { return `<span class="med" aria-hidden="true">${o.e || '•'}</span>`; }
+function optBtn(o, i, sel, multi) {
+  const c = o.c || ACCENTS[i % ACCENTS.length];
+  return `<button class="opt${sel ? ' on' : ''}" style="--c:${c}" data-v="${esc(o.v)}" role="${multi ? 'checkbox' : 'radio'}" aria-checked="${sel}">${med(o)}<span class="lbl">${esc(o.t)}${o.s ? `<small>${esc(o.s)}</small>` : ''}</span><span class="chk">${ICON_CHK}</span></button>`;
+}
+function head(q, n) {
+  return `<div class="kick" data-in><i>${n}</i>${esc(q.k || '')}</div><h2 class="qt" data-in>${qText(q)}</h2>${q.hint ? `<div class="hint" data-in>${q.hint}</div>` : ''}${q.ctx ? `<div class="ctx" data-in>${esc(q.ctx)}</div>` : ''}`;
+}
+function canOpts(q) {
+  const all = [{ v:'limon', t:'Limón', c:COL.limon }, { v:'mango', t:'Mango', c:COL.mango }, { v:'fresa', t:'Fresa', c:COL.fresa }];
+  return q.from ? all.filter(o => q.from(A).includes(o.v)) : all;
+}
+
+function render(q) {
+  const el = document.createElement('section');
+  el.className = 'scr';
+  const n = String(progress().done + 1).padStart(2, '0');
+  const val = A[q.id];
+
+  if (q.type === 'intro') {
+    el.classList.add('hero');
+    el.innerHTML = `
+      <div class="brand" data-in>Los Cuates · encuesta exprés</div>
+      <h1 class="h1" data-in>¿Ya la<br><span class="c">destapaste?</span></h1>
+      <p class="lead" data-in>Queremos saber qué piensas de los <b>cócteles con tequila en lata personal</b>. Son preguntas de <b>tocar y listo</b>.</p>
+      <div class="trio" data-in><img src="${LATA.limon}" alt="Lata Margarita y Limón"><img src="${LATA.fresa}" alt="Lata Margarita y Fresa"><img src="${LATA.mango}" alt="Lata Margarita y Mango"></div>
+      <div class="badges" data-in><span class="badge" style="--c:var(--limon)"><b></b>1 minuto</span><span class="badge" style="--c:var(--mango)"><b></b>Anónima</span><span class="badge" style="--c:var(--fresa)"><b></b>Sin escribir</span></div>
+      <p class="legal" data-in>Estudio académico independiente sobre la marca. <b>No es una cuenta oficial de Los Cuates ni de Quala.</b> Solo para mayores de 18 años. No pedimos nombre, correo ni teléfono.<br>El exceso de alcohol es perjudicial para la salud.</p>`;
+    setAction({ label: '¡Va, empecemos!', run: () => { startedAt = Date.now(); next(); } });
+    return el;
+  }
+
+  if (q.type === 'end') {
+    el.classList.add('fin');
+    if (A.edad === 'menor') {
+      el.innerHTML = `<div class="brand" data-in>Gracias por tu interés</div><h1 class="h1" data-in>¡Nos vemos<br><span class="c">en unos años!</span></h1><p class="lead" data-in>Esta encuesta es solo para mayores de 18. No guardamos ninguna respuesta tuya.</p>`;
+      setAction(null);
+      return el;
+    }
+    const f = A.favorito || (A.sabores || [])[0] || A.sabor_primero;
+    el.innerHTML = `
+      <div class="brand" data-in>Respuesta guardada</div>
+      <h1 class="h1" data-in>¡Salud,<br><span class="c">cuate!</span></h1>
+      ${f ? `<img class="fav" data-in src="${LATA[f]}" alt="">` : ''}
+      <div class="stamp" data-in>${f ? 'Team ' + ({ limon:'Limón', mango:'Mango', fresa:'Fresa' })[f] : 'Gracias por tu tiempo'}</div>
+      <p class="lead" data-in style="margin:14px 0 10px">Tu opinión ya quedó guardada. Nos ayuda a entender qué quiere la gente de un cóctel con tequila.</p>
+      <p class="legal" data-in>Disfruta con moderación. El exceso de alcohol es perjudicial para la salud.</p>`;
+    setAction({ label: 'Pásala a un cuate', run: share });
+    return el;
+  }
+
+  if (q.type === 'demo') {
+    const rows = [
+      { id:'genero', lb:'Género', o:[['mujer', 'Mujer'], ['hombre', 'Hombre'], ['otro', 'Otro'], ['nd', 'Prefiero no decir']] },
+      { id:'ciudad', lb:'¿Dónde vives?', o:[['bogota', 'Bogotá'], ['medellin', 'Medellín'], ['cali', 'Cali'], ['barranquilla', 'Barranquilla'], ['otra_col', 'Otra ciudad de Colombia'], ['exterior', 'Fuera de Colombia']] },
+      { id:'estrato', lb:'Estrato', o:[['1-2', '1 o 2'], ['3', '3'], ['4', '4'], ['5-6', '5 o 6'], ['nd', 'Prefiero no decir']] },
+    ];
+    el.innerHTML = head(q, n) + rows.map(r => `<div class="drow" data-in><div class="lb">${r.lb}</div><div class="chips" data-row="${r.id}">${r.o.map(([v, t]) => `<button class="chip${A[r.id] === v ? ' on' : ''}" data-v="${v}">${t}</button>`).join('')}</div></div>`).join('');
+    el.querySelectorAll('.chips').forEach(box => box.addEventListener('click', e => {
+      const b = e.target.closest('.chip'); if (!b) return;
+      A[box.dataset.row] = b.dataset.v;
+      box.querySelectorAll('.chip').forEach(x => x.classList.toggle('on', x === b));
+      gsap.fromTo(b, { scale: .85 }, { scale: 1, duration: .45, ease: 'back.out(3)' });
+      paintAction();
+    }));
+    const missing = () => rows.filter(r => !A[r.id]).length;
+    setAction({ isQ: true, label: 'Enviar respuestas', enabled: () => !missing(),
+      note: () => missing() ? `Te ${missing() === 1 ? 'falta <b>1</b>' : `faltan <b>${missing()}</b>`} y terminamos` : '¡Todo listo!',
+      run: () => { submit(); next(); } });
+    return el;
+  }
+
+  if (q.type === 'scale') {
+    el.innerHTML = head(q, n) + `<div class="scale">${q.opts.map(o => `<button class="face${val === o.v ? ' on' : ''}" data-v="${o.v}"><b>${o.e}</b><span>${o.t}</span></button>`).join('')}</div>`;
+    el.querySelector('.scale').addEventListener('click', e => {
+      const b = e.target.closest('.face'); if (!b) return;
+      A[q.id] = +b.dataset.v;
+      el.querySelectorAll('.face').forEach(x => x.classList.toggle('on', x === b));
+      gsap.fromTo(b.querySelector('b'), { rotate: -20 }, { rotate: 0, duration: .5, ease: 'elastic.out(1,.4)' });
+      paintAction(); autoNext();
+    });
+    setAction(qAction(q, false));
+    return el;
+  }
+
+  if (q.type === 'cans') {
+    const opts = canOpts(q), sel = q.multi ? (val || []) : val;
+    el.innerHTML = head(q, n) + `<div class="cans" style="${opts.length < 3 ? `grid-template-columns:repeat(${opts.length},1fr)` : ''}">${opts.map(o => `<button class="can${(q.multi ? sel.includes(o.v) : sel === o.v) ? ' on' : ''}" style="--c:${o.c}" data-v="${o.v}"><span class="chk">${ICON_CHK}</span><img src="${LATA[o.v]}" alt=""><span>${o.t}</span></button>`).join('')}</div>`;
+    el.querySelector('.cans').addEventListener('click', e => {
+      const b = e.target.closest('.can'); if (!b) return;
+      const v = b.dataset.v;
+      if (q.multi) {
+        const s = new Set(A[q.id] || []); s.has(v) ? s.delete(v) : s.add(v); A[q.id] = [...s];
+        b.classList.toggle('on', s.has(v));
+      } else {
+        A[q.id] = v; el.querySelectorAll('.can').forEach(x => x.classList.toggle('on', x === b)); autoNext();
+      }
+      gsap.fromTo(b.querySelector('img'), { rotate: -14 }, { rotate: 0, duration: .7, ease: 'elastic.out(1,.35)' });
+      paintAction();
+    });
+    setAction(qAction(q, !!q.multi));
+    return el;
+  }
+
+  if (q.type === 'single' && q.from) {   // marcas elegidas → favorita
+    const opts = q.from(A).map(v => { const o = MARCAS.find(m => m.v === v) || { v, t:v }; return v === 'otro' ? { ...o, t: A.conoce_otro || 'Otra', s:'la que escribiste' } : o; });
+    el.innerHTML = head(q, n) + `<div class="opts">${opts.map((o, i) => optBtn(o, i, val === o.v, false)).join('')}</div>`;
+    bindOpts(el, q, false, opts);
+    return el;
+  }
+
+  if (q.type === 'concept') {
+    el.innerHTML = `<div class="kick" data-in><i>${n}</i>${esc(q.k)}</div>
+      <div class="concept" data-in><img src="${LATA.mango}" alt="Lata de Los Cuates Margarita y Mango">
+        <div class="facts">
+          <div class="fact"><b>Tequila</b>con sabor a margarita</div>
+          <div class="fact"><b>3</b>limón, mango y fresa</div>
+          <div class="fact"><b>4 %</b>de alcohol, suave</div>
+          <div class="fact"><b>269 ml</b>lata personal</div>
+          <div class="fact"><b>~$5.000</b>en la tienda</div>
+          <div class="src">Datos de la lata y precio de góndola en Colombia, octubre de 2026.</div>
+        </div></div>
+      <h2 class="qt" data-in style="margin-top:0">${qText(q)}</h2>
+      <div class="opts">${q.opts.map((o, i) => optBtn(o, i, val === o.v, false)).join('')}</div>`;
+    bindOpts(el, q, false, q.opts);
+    return el;
+  }
+
+  // single / multi genérico
+  const multi = q.type === 'multi';
+  const sel = multi ? (val || []) : val;
+  let i = 0;
+  const body = q.opts.map(o => o.g ? `<div class="grp">${esc(o.g)}</div>` : optBtn(o, i++, multi ? sel.includes(o.v) : sel === o.v, multi)).join('');
+  const hasOther = q.opts.some(o => o.other);
+  el.innerHTML = head(q, n)
+    + (q.showCans ? `<div class="trio" data-in style="height:clamp(110px,18vh,160px);margin:0 0 12px"><img src="${LATA.limon}" alt=""><img src="${LATA.fresa}" alt=""><img src="${LATA.mango}" alt=""></div>` : '')
+    + `<div class="opts${q.cols === 2 ? ' c2' : ''}">${body}${hasOther ? `<input class="other-in${multi && sel.includes('otro') ? ' show' : ''}" id="otherIn" maxlength="60" placeholder="¿Cuál? Escríbela aquí" value="${esc(A.conoce_otro || '')}">` : ''}</div>`;
+  bindOpts(el, q, multi, q.opts.filter(o => !o.g));
+  return el;
+}
+
+function bindOpts(el, q, multi, opts) {
+  const other = $('#otherIn', el);
+  const dim = () => {
+    if (!multi) return;
+    const s = A[q.id] || [], full = q.max && s.length >= q.max;
+    el.querySelectorAll('.opt').forEach(b => b.classList.toggle('dim', !!full && !s.includes(b.dataset.v)));
+  };
+  el.querySelector('.opts').addEventListener('click', e => {
+    const b = e.target.closest('.opt'); if (!b) return;
+    const v = b.dataset.v, o = opts.find(x => String(x.v) === v) || {};
+    if (multi) {
+      let s = new Set(A[q.id] || []);
+      if (s.has(v)) s.delete(v);
+      else {
+        if (o.excl) s = new Set();                                      // "ninguna" borra lo demás
+        else opts.filter(x => x.excl).forEach(x => s.delete(String(x.v)));
+        if (q.max && s.size >= q.max) { nudge(b, `Máximo ${q.max}: quita una para cambiar`); return; }
+        s.add(v);
+      }
+      A[q.id] = [...s];
+      el.querySelectorAll('.opt').forEach(x => { const on = s.has(x.dataset.v); x.classList.toggle('on', on); x.setAttribute('aria-checked', on); });
+      if (other) {
+        other.classList.toggle('show', s.has('otro'));
+        if (s.has('otro') && v === 'otro') setTimeout(() => { other.focus(); other.scrollIntoView({ block: 'center', behavior: 'smooth' }); }, 60);
+      }
+      dim();
+      gsap.fromTo('#cta', { scale: .96 }, { scale: 1, duration: .4, ease: 'back.out(3)' });
+    } else {
+      A[q.id] = v;
+      el.querySelectorAll('.opt').forEach(x => { const on = x === b; x.classList.toggle('on', on); x.setAttribute('aria-checked', on); });
+      autoNext();
+    }
+    gsap.fromTo(b.querySelector('.med'), { scale: .6, rotate: -30 }, { scale: 1, rotate: 0, duration: .6, ease: 'back.out(3)' });
+    paintAction();
+  });
+  if (other) {
+    other.addEventListener('input', () => { A.conoce_otro = other.value.trim(); paintAction(); });
+    other.addEventListener('keydown', e => { if (e.key === 'Enter') { other.blur(); runAction(); } });
+  }
+  dim();
+  setAction(qAction(q, multi));
+}
+
+function nudge(b, msg) { gsap.fromTo(b, { x: -8 }, { x: 0, duration: .5, ease: 'elastic.out(1,.3)' }); toast(msg); }
+function toast(msg) { const t = $('#toast'); t.textContent = msg; gsap.killTweensOf(t); gsap.timeline().to(t, { y: -100, opacity: 1, duration: .35, ease: 'back.out(2)' }).to(t, { y: 160, opacity: 0, duration: .3, delay: 1.6 }); }
+function autoNext() { if (busy) return; busy = true; const at = cur; setTimeout(() => { busy = false; if (cur === at) next(); }, 420); }
+
+/* ---------- progreso: cuenta las preguntas que faltan según la ruta actual ---------- */
+function progress() {
+  const ids = Q.map((q, i) => i).filter(i => Q[i].type !== 'intro' && Q[i].type !== 'end' && visible(Q[i]));
+  const done = ids.filter(i => i < Math.max(cur, 0)).length;
+  // antes de saber la ruta, suponer el largo típico
+  const total = A.probado ? ids.length : Math.max(ids.length, 12);
+  return { done, total };
+}
+function paintProgress(q) {
+  const p = progress();
+  const pct = q.type === 'end' ? 100 : q.type === 'intro' ? 0 : Math.round(p.done / p.total * 100);
+  gsap.to('#progFill', { width: Math.max(pct, q.type === 'intro' ? 0 : 4) + '%', duration: .8, ease: 'power3.out' });
+  $('#prog').setAttribute('aria-valuenow', pct);
+  $('#progTxt').textContent = q.type === 'intro' ? '' : q.type === 'end' ? '¡Listo!' : `${p.done + 1}/${p.total}`;
+  $('#back').hidden = q.type === 'intro' || q.type === 'end' || hist.length < 2;
+}
+
+/* ---------- navegación con transición ---------- */
+gsap.ticker.lagSmoothing(0);   // si el teléfono va lento, la animación termina a tiempo y nunca deja textos a medio aparecer
+function go(i, dir = 1) {
+  // edad: si es menor, salta al final sin guardar
+  if (cur >= 0 && Q[cur].id === 'edad' && A.edad === 'menor' && dir > 0) i = Q.length - 1;
+  const nq = Q[i];
+  document.querySelectorAll('.more').forEach(m => m.remove());
+  const olds = [...document.querySelectorAll('#screens .scr')];
+  if (dir > 0) hist.push(i);
+  cur = i;
+  const acc = ACCENTS[(hist.length - 1) % ACCENTS.length];
+  document.documentElement.style.setProperty('--sec', nq.type === 'intro' ? COL.mango : acc);
+  const el = render(nq);
+  $('#screens').appendChild(el);
+  paintProgress(nq);
+  olds.forEach(o => { o.style.pointerEvents = 'none'; gsap.to(o, { xPercent: -30 * dir, opacity: 0, duration: .3, ease: 'power2.in', onComplete: () => o.remove() }); });
+  gsap.fromTo(el, { xPercent: 26 * dir, opacity: 0 }, { xPercent: 0, opacity: 1, duration: .45, delay: olds.length ? .12 : 0, ease: 'power3.out', clearProps: 'transform,opacity' });
+  const items = el.querySelectorAll('[data-in], .opt, .can, .face, .grp, .chip');
+  gsap.fromTo(items, { y: 18, opacity: 0 }, { y: 0, opacity: 1, duration: .4, stagger: Math.min(.04, .5 / items.length), delay: olds.length ? .18 : .05, ease: 'back.out(1.5)', clearProps: 'transform,opacity' });
+  if (nq.type === 'intro') {
+    gsap.fromTo(el.querySelectorAll('.trio img'), { y: 120 }, { y: 0, duration: 1, stagger: .12, delay: .3, ease: 'elastic.out(1,.6)' });
+    el.querySelectorAll('.trio img').forEach((im, k) => gsap.to(im, { y: -10, duration: 1.6 + k * .3, repeat: -1, yoyo: true, ease: 'sine.inOut', delay: 1.4 + k * .4 }));
+  }
+  if (nq.type === 'end') {
+    confetti();
+    const fav = el.querySelector('.fav'), st = el.querySelector('.stamp');
+    fav && gsap.fromTo(fav, { y: 200, rotate: 25 }, { y: 0, rotate: 0, duration: 1.2, ease: 'elastic.out(1,.5)' });
+    st && gsap.fromTo(st, { scale: 3 }, { scale: 1, duration: .5, delay: .6, ease: 'power4.in' });
+  }
+  el.scrollTop = 0;
+  // aviso de "hay más abajo" cuando la lista no cabe
+  requestAnimationFrame(() => {
+    if (el.scrollHeight > el.clientHeight + 30) {
+      const m = document.createElement('div'); m.className = 'more'; m.textContent = 'Desliza para ver más ↓';
+      $('#screens').appendChild(m);
+      const kill = () => { if (el.scrollTop > 40) { m.style.opacity = 0; setTimeout(() => m.remove(), 300); el.removeEventListener('scroll', kill); } };
+      el.addEventListener('scroll', kill);
+      setTimeout(() => { m.style.opacity = 0; setTimeout(() => m.remove(), 300); }, 3500);
+      gsap.fromTo(m, { y: 10 }, { y: 0, repeat: 5, yoyo: true, duration: .5, ease: 'sine.inOut' });
+    }
+  });
+}
+$('#back').onclick = () => {
+  if (hist.length < 2) return;
+  busy = false;
+  document.querySelectorAll('.more').forEach(m => m.remove());
+  hist.pop();
+  go(hist[hist.length - 1], -1);
+};
+
+/* ---------- papel picado que cae al final ---------- */
+function confetti() {
+  const box = $('#confetti'), cols = ['#e2283f', '#f8a21c', '#86c63f', '#ff4f8b', '#16b3ad', '#ffd23f', '#9b59d0'];
+  for (let i = 0; i < 46; i++) {
+    const p = document.createElement('i'); p.style.background = cols[i % cols.length]; p.style.left = Math.random() * 100 + '%'; box.appendChild(p);
+    gsap.to(p, { y: box.clientHeight + 60, x: gsap.utils.random(-80, 80), rotate: gsap.utils.random(-540, 540), duration: gsap.utils.random(2.2, 4), delay: Math.random() * .9, ease: 'power1.in', onComplete: () => p.remove() });
+  }
+}
+
+/* ---------- envío a la base de datos ---------- */
+const COLUMNS = ['id', 'fecha_cliente', 'duracion_seg', 'ruta', 'edad', 'probado',
+  'sabores', 'favorito', 'gusta', 'mejorar', 'tequila', 'plan', 'precio', 'sustituto', 'entero', 'persona', 'recomienda',
+  'frena', 'conoce', 'conoce_otro', 'toma_normal', 'favorita', 'paga', 'cambiaria', 'probaria', 'sabor_primero',
+  'nuevo_sabor', 'genero', 'ciudad', 'estrato', 'dispositivo', 'fuente', 'version'];
+function row() {
+  const r = {};
+  const visibleIds = new Set(Q.filter(visible).map(q => q.id));
+  for (const c of COLUMNS) {
+    let v = A[c];
+    if (v !== undefined && Q.some(q => q.id === c) && !visibleIds.has(c)) v = undefined; // respuestas de una ruta abandonada con "volver"
+    r[c] = Array.isArray(v) ? v.join(' | ') : (v ?? '');
+  }
+  if (A.probado === 'si' && (A.sabores || []).length === 1) r.favorito = A.sabores[0];
+  if (hasBrands(A) && brandList(A).length === 1) r.favorita = brandList(A)[0];
+  if (!(A.conoce || []).includes('otro')) r.conoce_otro = '';
+  r.id = (crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).slice(2)).slice(0, 13);
+  r.fecha_cliente = new Date().toISOString();
+  r.duracion_seg = Math.round((Date.now() - startedAt) / 1000);
+  r.ruta = A.probado === 'si' ? 'A_probo' : A.probado === 'visto' ? 'B_vio_no_probo' : 'B_no_conoce';
+  r.dispositivo = /Mobi|Android|iPhone/i.test(navigator.userAgent) ? 'movil' : 'computador';
+  r.fuente = params.get('src') || params.get('utm_source') || (/Instagram/i.test(navigator.userAgent) ? 'instagram' : 'directo');
+  r.version = VERSION;
+  return r;
+}
+function submit() {
+  const r = row();
+  const queue = loadQueue(); queue.push(r); saveQueue(queue);
+  flush();
+  try { localStorage.setItem('cuates_respondio', '1'); } catch (e) {}
+}
+function loadQueue() { try { return JSON.parse(localStorage.getItem('cuates_cola') || '[]'); } catch (e) { return []; } }
+function saveQueue(q) { try { localStorage.setItem('cuates_cola', JSON.stringify(q)); } catch (e) {} }
+async function flush() {
+  const queue = loadQueue();
+  if (!queue.length) return;
+  if (!ENDPOINT) { console.info('[modo prueba] Respuesta que se enviaría:', JSON.stringify(queue[queue.length - 1])); return; }
+  const left = [];
+  for (const r of queue) {
+    try {
+      // text/plain evita el "preflight" CORS; Apps Script recibe el JSON en e.postData.contents
+      await fetch(ENDPOINT, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(r), keepalive: true });
+    } catch (e) { left.push(r); }
+  }
+  saveQueue(left);
+}
+async function share() {
+  const data = { title: 'Encuesta Los Cuates', text: '¿Ya probaste Los Cuates? Responde esta encuesta de 1 minuto 🍹', url: location.href.split('?')[0] };
+  try { if (navigator.share) { await navigator.share(data); return; } await navigator.clipboard.writeText(data.url); toast('¡Link copiado!'); } catch (e) {}
+}
+
+/* ---------- arranque ---------- */
+flush(); // reintenta envíos que quedaron pendientes (sin señal, por ejemplo)
+go(0);
+</script>
+</body>
+</html>
